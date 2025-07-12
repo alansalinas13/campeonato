@@ -7,6 +7,8 @@ use App\Models\Club;
 use App\Models\Campeonato;
 use App\Models\Partido;
 use App\Models\Estadistica;
+use App\Models\Jugador;
+use App\Models\EventoPartido;
 
 class PartidoController extends Controller
 {
@@ -26,7 +28,8 @@ class PartidoController extends Controller
     {
         $clubes = Club::all();
         $campeonatos = Campeonato::all();
-        return view('partidos.create', compact('clubes', 'campeonatos'));
+        $jugadores = Jugador::all();
+        return view('partidos.create', compact('clubes', 'campeonatos','jugadores'));
     }
 
     /**
@@ -57,7 +60,21 @@ class PartidoController extends Controller
         'parrond', 'parfec', 'pargolloc', 'pargolvis', 'parpen',
         'idcampeonato', 'idclub_local', 'idclub_visitante', 'idclub_ganador'
     ]));
-
+    // Eliminar eventos anteriores si es edición
+    if ($partido->exists) {
+    EventoPartido::where('idpartido', $partido->idpartido)->delete();
+    }
+    // Guardar nuevos eventos
+    if ($request->has('evento')) {
+        foreach ($request->evento as $ev) {
+            EventoPartido::create([
+                'evenminu' => $ev['minuto'],
+                'evendescri' => $ev['descripcion'],
+                'idjugador' => $ev['jugador'],
+                'idpartido' => $partido->idpartido,
+            ]);
+        }
+    }
      // Solo actualizamos estadísticas si es ronda 1 (fase de grupos) y si el partido ya tiene resultado
     if ($partido->parrond == 1 && ($partido->idclub_ganador !== null && $partido->idclub_ganador !== '')) {
         $this->actualizarEstadisticasPartido($partido, [
@@ -87,7 +104,13 @@ class PartidoController extends Controller
         $partido = Partido::findOrFail($id);
     $clubes = Club::all();
     $campeonatos = Campeonato::all();
-    return view('partidos.edit', compact('partido', 'clubes', 'campeonatos'));
+    $jugadores = Jugador::all();
+    //$eventopartido = EventoPartido::where('idpartido', $partido->idpartido)->get();
+    $partido = Partido::with('eventos')->findOrFail($id);
+    //$local = Estadistica::where('idcampeonato', $partido->idcampeonato)
+       // ->where('idclub', $partido->idclub_local)->first();
+//dd($partido);
+    return view('partidos.edit', compact('partido', 'clubes', 'campeonatos', 'jugadores'));
     }
 
     /**
@@ -120,6 +143,21 @@ class PartidoController extends Controller
             'parrond', 'parfec', 'pargolloc', 'pargolvis', 'parpen',
             'idcampeonato', 'idclub_local', 'idclub_visitante', 'idclub_ganador'
         ]));
+        // Eliminar eventos anteriores si es edición
+    if ($partido->exists) {
+    EventoPartido::where('idpartido', $partido->idpartido)->delete();
+    }
+    // Guardar nuevos eventos
+    if ($request->has('evento')) {
+        foreach ($request->evento as $ev) {
+            EventoPartido::create([
+                'evenminu' => $ev['minuto'],
+                'evendescri' => $ev['descripcion'],
+                'idjugador' => $ev['jugador'],
+                'idpartido' => $partido->idpartido,
+            ]);
+        }
+    }
      // Solo actualizamos estadísticas si es ronda 1
     if ($partido->parrond == 1 && ($partido->idclub_ganador !== null && $partido->idclub_ganador !== '')){
         //$this->actualizarEstadisticas($partido->idcampeonato);

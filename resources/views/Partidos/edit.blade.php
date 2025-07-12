@@ -107,8 +107,79 @@
                 @endforeach
             </select>
         </div>
+<h5 class="mt-4">Eventos del Partido</h5>
 
+<table class="table table-sm" id="tabla-eventos">
+    <thead>
+        <tr>
+            <th>Minuto</th>
+            <th>Jugador</th>
+            <th>Descripción</th>
+            <th>Acción</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Eventos se cargarán dinámicamente con JS -->
+    </tbody>
+</table>
+
+<button type="button" class="btn btn-sm btn-outline-primary" onclick="agregarEvento()">+ Agregar Evento</button>
+
+<input type="hidden" name="eventos_json" id="eventos_json">
         <button type="submit" class="btn btn-primary">Actualizar</button>
     </form>
 </div>
 @endsection
+
+
+<script>
+    let eventos = [];
+
+    function agregarEvento(evento = {}) {
+        const jugadores = @json($jugadores);
+        const tbody = document.querySelector('#tabla-eventos tbody');
+        const index = eventos.length;
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td><input type="number" name="evento[${index}][minuto]" class="form-control" value="${evento.minuto || ''}" required></td>
+            <td>
+                <select name="evento[${index}][jugador]" class="form-control" required>
+                    <option value="">-- Jugador --</option>
+                    ${jugadores.map(j => `<option value="${j.idjugador}" ${evento.jugador == j.idjugador ? 'selected' : ''}>${j.jugnom}</option>`).join('')}
+                </select>
+            </td>
+            <td>
+                <select name="evento[${index}][descripcion]" class="form-control" required>
+                    <option value="Gol" ${evento.descripcion == 'Gol' ? 'selected' : ''}>Gol</option>
+                    <option value="Tarjeta Amarilla" ${evento.descripcion == 'Tarjeta Amarilla' ? 'selected' : ''}>Tarjeta Amarilla</option>
+                    <option value="Tarjeta Roja" ${evento.descripcion == 'Tarjeta Roja' ? 'selected' : ''}>Tarjeta Roja</option>
+                </select>
+            </td>
+            <td>
+                <button type="button" class="btn btn-danger btn-sm" onclick="eliminarFila(this)">✖</button>
+            </td>
+        `;
+
+        tbody.appendChild(row);
+        eventos.push(evento);
+    }
+
+    function eliminarFila(btn) {
+        const row = btn.closest('tr');
+        row.remove();
+    }
+
+    // Precargar eventos (después de definir la función)
+    window.onload = function () {
+        @foreach($partido->eventos as $ev)
+            agregarEvento({
+                minuto: '{{ $ev->evenminu }}',
+                jugador: '{{ $ev->idjugador }}',
+                descripcion: '{{ $ev->evendescri }}'
+            });
+        @endforeach
+    };
+</script>
+
+

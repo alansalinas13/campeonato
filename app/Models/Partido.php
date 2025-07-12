@@ -41,7 +41,7 @@ class Partido extends Model
     }
 
     public static function rondas()
-{
+    {
     return [
         1 => 'Fase de grupos',
         2 => 'Cuartos de final',
@@ -54,5 +54,9 @@ class Partido extends Model
     public function getNombreRondaAttribute()
     {
         return self::rondas()[$this->parrond] ?? 'Desconocido';
+    }
+    public function eventos()
+    {
+        return $this->hasMany(EventoPartido::class, 'idpartido');
     }
 }
