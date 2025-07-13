@@ -35,8 +35,13 @@
         </div>
 
         <div class="mb-3">
-            <label>Fecha y hora</label>
+            <label>Día y hora</label>
             <input type="datetime-local" name="parfec" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label>Fecha</label>
+            <input type="number" name="parfechas" class="form-control" required>
         </div>
 
         <div class="mb-3">

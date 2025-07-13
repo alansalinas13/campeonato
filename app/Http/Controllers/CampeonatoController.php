@@ -55,70 +55,207 @@ class CampeonatoController extends Controller
         $clubesGrupoB = $clubes->where('clubgroup', 'B')->values();
 
 ///$fecha = Carbon::createFromDate($campeonato->canpanio, 1, 1);
-        $fecha = Carbon::createFromDate($campeonato->canpanio, 1, 1)->setTime(15, 0);//para que lo genere con hora
+        /*       $fecha = Carbon::createFromDate($campeonato->canpanio, 1, 1)->setTime(15, 0);//para que lo genere con hora
 
-// Generar partidos de ida y vuelta por grupo
-        foreach (['A' => $clubesGrupoA, 'B' => $clubesGrupoB] as $grupo => $clubesGrupo) {
-            for ($i = 0; $i < $clubesGrupo->count(); $i++) {
-                for ($j = $i + 1; $j < $clubesGrupo->count(); $j++) {
-                    $local = $clubesGrupo[$i];
-                    $visitante = $clubesGrupo[$j];
+               // Generar partidos de ida y vuelta por grupo
+               foreach (['A' => $clubesGrupoA, 'B' => $clubesGrupoB] as $grupo => $clubesGrupo) {
+                   $cantClubs = $clubesGrupo->count();
+                   for ($i = 0; $i < $clubesGrupo->count(); $i++) {
+                       for ($j = $i + 1; $j < $clubesGrupo->count(); $j++) {
+                           $local = $clubesGrupo[$i];
+                           $visitante = $clubesGrupo[$j];
 
-                    // Ida
-                    Partido::create([
-                        'parrond' => 1,
-                        'parfec' => $fecha,
-                        'pargolloc' => 0,
-                        'pargolvis' => 0,
-                        'parpen' => 0,
-                        'idclub_local' => $local->idclub,
-                        'idclub_visitante' => $visitante->idclub,
-                        'idcampeonato' => $campeonato->idcampeonato,
-                    ]);
+                           // Ida
+                           Partido::create([
+                               'parrond' => 1,
+                               'parfec' => $fecha,
+                               'parfechas' => $fecha,
+                               'pargolloc' => 0,
+                               'pargolvis' => 0,
+                               'parpen' => 0,
+                               'idclub_local' => $local->idclub,
+                               'idclub_visitante' => $visitante->idclub,
+                               'idcampeonato' => $campeonato->idcampeonato,
+                           ]);
 
-                    // Vuelta
-                    Partido::create([
-                        'parrond' => 1,
-                        'parfec' => $fecha,
-                        'pargolloc' => 0,
-                        'pargolvis' => 0,
-                        'parpen' => 0,
-                        'idclub_local' => $visitante->idclub,
-                        'idclub_visitante' => $local->idclub,
-                        'idcampeonato' => $campeonato->idcampeonato,
-                    ]);
-                }
+                           // Vuelta
+                           Partido::create([
+                               'parrond' => 1,
+                               'parfec' => $fecha,
+                               'pargolloc' => 0,
+                               'pargolvis' => 0,
+                               'parpen' => 0,
+                               'idclub_local' => $visitante->idclub,
+                               'idclub_visitante' => $local->idclub,
+                               'idcampeonato' => $campeonato->idcampeonato,
+                           ]);
+                       }
+                   }
+               }
+
+               // Interserial: generar partidos entre los "libres"
+               for ($i = 0; $i < $clubesGrupoA->count(); $i++) {
+                   $libreA = $clubesGrupoA[$i];
+                   $libreB = $clubesGrupoB[$i] ?? null;
+
+                   if ($libreB) {
+
+                       Partido::create([
+                           'parrond' => 1,
+                           'parfec' => $fecha,
+                           'pargolloc' => 0,
+                           'pargolvis' => 0,
+                           'parpen' => 0,
+                           'idclub_local' => $libreA->idclub,
+                           'idclub_visitante' => $libreB->idclub,
+                           'idcampeonato' => $campeonato->idcampeonato,
+                       ]);
+                       Partido::create([
+                           'parrond' => 1,
+                           'parfec' => $fecha,
+                           'pargolloc' => 0,
+                           'pargolvis' => 0,
+                           'parpen' => 0,
+                           'idclub_local' => $libreB->idclub,
+                           'idclub_visitante' => $libreA->idclub,
+                           'idcampeonato' => $campeonato->idcampeonato,
+                       ]);
+                   }
+               }*/
+
+        $anio = $campeonato->canpanio;
+        $fechaBase = Carbon::create($anio, 1, 1);
+        $fechaNumero = 1;
+
+// Grupos
+        $grupoA = $clubesGrupoA->values();
+        $grupoB = $clubesGrupoB->values();
+
+        $calendarioA = $this->generarCalendarioRoundRobin($grupoA);
+        $calendarioB = $this->generarCalendarioRoundRobin($grupoB);
+        $rondas = count($calendarioA); // ambos grupos tienen misma cantidad
+
+        for ($i = 0; $i < $rondas; $i++) {
+            // ---- Grupo A - Ida ----
+            foreach ($calendarioA[$i] as [$local, $visitante]) {
+                Partido::create([
+                    'parrond' => 1,
+                    'parfechas' => $fechaNumero,
+                    'parfec' => $fechaBase->copy()->addDays($fechaNumero - 1),
+                    'pargolloc' => 0,
+                    'pargolvis' => 0,
+                    'parpen' => 0,
+                    'idclub_local' => $local->idclub,
+                    'idclub_visitante' => $visitante->idclub,
+                    'idcampeonato' => $campeonato->idcampeonato,
+                ]);
             }
+
+            // ---- Grupo B - Ida ----
+            foreach ($calendarioB[$i] as [$local, $visitante]) {
+                Partido::create([
+                    'parrond' => 1,
+                    'parfechas' => $fechaNumero,
+                    'parfec' => $fechaBase->copy()->addDays($fechaNumero - 1),
+                    'pargolloc' => 0,
+                    'pargolvis' => 0,
+                    'parpen' => 0,
+                    'idclub_local' => $local->idclub,
+                    'idclub_visitante' => $visitante->idclub,
+                    'idcampeonato' => $campeonato->idcampeonato,
+                ]);
+            }
+
+            // ---- Interserial - Ida ----
+            //dd($grupoA->pluck('idclub'));
+            //$libresA = $grupoA->pluck('idclub')->diff($calendarioA[$i])->values();
+            $jugandoA = collect($calendarioA[$i])
+                ->flatMap(fn($par) => [$par[0]->idclub, $par[1]->idclub]);
+            $libresA = $grupoA->whereNotIn('idclub', $jugandoA)->values();
+
+            //$libresB = $grupoB->pluck('idclub')->diff($calendarioB[$i])->values();
+            $jugandoB = collect($calendarioB[$i])
+                ->flatMap(fn($par) => [$par[0]->idclub, $par[1]->idclub]);
+
+            $libresB = $grupoB->whereNotIn('idclub', $jugandoB)->values();
+
+
+            if ($libresA->first() && $libresB->first()) {
+                Partido::create([
+                    'parrond' => 1,
+                    'parfechas' => $fechaNumero,
+                    'parfec' => $fechaBase->copy()->addDays($fechaNumero - 1),
+                    'pargolloc' => 0,
+                    'pargolvis' => 0,
+                    'parpen' => 0,
+                    'idclub_local' => $libresA->first()->idclub,
+                    'idclub_visitante' => $libresB->first()->idclub,
+                    'idcampeonato' => $campeonato->idcampeonato,
+                ]);
+            }
+
+            $fechaNumero++;
         }
 
-// Interserial: generar partidos entre los "libres"
-        for ($i = 0; $i < $clubesGrupoA->count(); $i++) {
-            $libreA = $clubesGrupoA[$i];
-            $libreB = $clubesGrupoB[$i] ?? null;
-
-            if ($libreB) {
-
+// ---- VUELTA (invirtiendo local y visitante) ----
+        for ($i = 0; $i < $rondas; $i++) {
+            // Grupo A - vuelta
+            foreach ($calendarioA[$i] as [$local, $visitante]) {
                 Partido::create([
                     'parrond' => 1,
-                    'parfec' => $fecha,
+                    'parfechas' => $fechaNumero,
+                    'parfec' => $fechaBase->copy()->addDays($fechaNumero - 1),
                     'pargolloc' => 0,
                     'pargolvis' => 0,
                     'parpen' => 0,
-                    'idclub_local' => $libreA->idclub,
-                    'idclub_visitante' => $libreB->idclub,
-                    'idcampeonato' => $campeonato->idcampeonato,
-                ]);
-                Partido::create([
-                    'parrond' => 1,
-                    'parfec' => $fecha,
-                    'pargolloc' => 0,
-                    'pargolvis' => 0,
-                    'parpen' => 0,
-                    'idclub_local' => $libreB->idclub,
-                    'idclub_visitante' => $libreA->idclub,
+                    'idclub_local' => $visitante->idclub,
+                    'idclub_visitante' => $local->idclub,
                     'idcampeonato' => $campeonato->idcampeonato,
                 ]);
             }
+
+            // Grupo B - vuelta
+            foreach ($calendarioB[$i] as [$local, $visitante]) {
+                Partido::create([
+                    'parrond' => 1,
+                    'parfechas' => $fechaNumero,
+                    'parfec' => $fechaBase->copy()->addDays($fechaNumero - 1),
+                    'pargolloc' => 0,
+                    'pargolvis' => 0,
+                    'parpen' => 0,
+                    'idclub_local' => $visitante->idclub,
+                    'idclub_visitante' => $local->idclub,
+                    'idcampeonato' => $campeonato->idcampeonato,
+                ]);
+            }
+
+            // Interserial vuelta
+            //$libresA = $grupoA->pluck('idclub')->diff($calendarioA[$i])->values();
+            $jugandoA = collect($calendarioA[$i])
+                ->flatMap(fn($par) => [$par[0]->idclub, $par[1]->idclub]);
+            $libresA = $grupoA->whereNotIn('idclub', $jugandoA)->values();
+
+            //$libresB = $grupoB->pluck('idclub')->diff($calendarioB[$i])->values();
+            $jugandoB = collect($calendarioB[$i])
+                ->flatMap(fn($par) => [$par[0]->idclub, $par[1]->idclub]);
+
+            $libresB = $grupoB->whereNotIn('idclub', $jugandoB)->values();
+
+            if ($libresA->first() && $libresB->first()) {
+                Partido::create([
+                    'parrond' => 1,
+                    'parfechas' => $fechaNumero,
+                    'parfec' => $fechaBase->copy()->addDays($fechaNumero - 1),
+                    'pargolloc' => 0,
+                    'pargolvis' => 0,
+                    'parpen' => 0,
+                    'idclub_local' => $libresA->first()->idclub,
+                    'idclub_visitante' => $libresB->first()->idclub,
+                    'idcampeonato' => $campeonato->idcampeonato,
+                ]);
+            }
+
+            $fechaNumero++;
         }
 
         return redirect()->route('campeonatos.index')->with('success', 'Campeonato creado correctamente.');
@@ -132,6 +269,39 @@ class CampeonatoController extends Controller
     {
         $clubes = Club::all();
         return view('campeonatos.create', compact('clubes'));
+    }
+
+    function generarCalendarioRoundRobin($clubes)
+    {
+        $clubes = $clubes->values();
+        $n = $clubes->count();
+        if ($n % 2 != 0) {
+            $clubes->push(null); // agregar bye si impares (acá no hace falta pero es buena práctica)
+            $n++;
+        }
+
+        $rondas = $n - 1;
+        $mitad = $n / 2;
+        $calendario = [];
+
+        for ($r = 0; $r < $rondas; $r++) {
+            $fecha = [];
+            for ($i = 0; $i < $mitad; $i++) {
+                $local = $clubes[$i];
+                $visitante = $clubes[$n - 1 - $i];
+                if ($local && $visitante) {
+                    $fecha[] = [$local, $visitante];
+                }
+            }
+            $calendario[] = $fecha;
+
+            // rotación: fijar primero, rotar el resto
+            $clubesRestantes = $clubes->slice(1);
+            $clubesRestantes->prepend($clubesRestantes->pop());
+            $clubes = collect([$clubes[0]])->merge($clubesRestantes);
+        }
+
+        return $calendario;
     }
 
     /**

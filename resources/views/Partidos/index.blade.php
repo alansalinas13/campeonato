@@ -1,3 +1,4 @@
+{{--
 @extends('layouts.app')
 
 @section('content')
@@ -14,6 +15,7 @@
             <tr>
                 <th>Ronda</th>
                 <th>Fecha</th>
+                <th>Día Partido</th>
                 <th>Local</th>
                 <th>Visitante</th>
                 <th>Goles Local</th>
@@ -28,6 +30,7 @@
             @foreach($partidos as $partido)
                 <tr>
                     <td>{{ $partido->nombre_ronda }}</td>
+                    <td>{{ $partido->parfechas }}</td>
                     <td>{{ $partido->parfec }}</td>
                     <td>{{ $partido->clubLocal->clubnom ?? '---' }}</td>
                     <td>{{ $partido->clubVisitante->clubnom ?? '---' }}</td>
@@ -57,4 +60,80 @@
         </tbody>
     </table>
 </div>
+@endsection
+--}}
+
+
+@extends('layouts.app')
+
+@section('content')
+    <div class="container">
+        <h2>Enfrentamientos</h2>
+
+        <form method="GET" action="{{ route('partidos.index') }}" class="row g-2 mb-4">
+            <div class="col-md-4">
+                <label>Campeonato</label>
+                <select name="idcampeonato" class="form-control">
+                    <option value="">-- Todos --</option>
+                    @foreach($campeonatos as $cam)
+                        <option
+                            value="{{ $cam->idcampeonato }}" {{ $idcampeonato == $cam->idcampeonato ? 'selected' : '' }}>
+                            {{ $cam->campnom }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label>Fecha (jornada)</label>
+                <input type="number" name="parfechas" class="form-control" value="{{ $parfechas }}">
+            </div>
+
+            <div class="col-md-3">
+                <label>Grupo</label>
+                <select name="grupo" class="form-control">
+                    <option value="">-- Todos --</option>
+                    <option value="A" {{ $grupo == 'A' ? 'selected' : '' }}>Grupo A</option>
+                    <option value="B" {{ $grupo == 'B' ? 'selected' : '' }}>Grupo B</option>
+                </select>
+            </div>
+
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+            </div>
+        </form>
+
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Fecha N°</th>
+                <th>Día</th>
+                <th>Campeonato</th>
+                <th>Local</th>
+                <th>Goles Loc</th>
+                <th>Visitante</th>
+                <th>Goles Vis</th>
+                <th>Grupo</th>
+            </tr>
+            </thead>
+            <tbody>
+            @forelse($partidos as $p)
+                <tr>
+                    <td>{{ $p->parfechas }}</td>
+                    <td>{{ \Carbon\Carbon::parse($p->parfec)->format('d/m/Y') }}</td>
+                    <td>{{ $p->campeonato->camyear }}</td>
+                    <td>{{ $p->local->clubnom }}</td>
+                    <td>{{ $p->pargolloc }}</td>
+                    <td>{{ $p->visitante->clubnom }}</td>
+                    <td>{{ $p->pargolvis }}</td>
+                    <td>{{ $p->local->clubgroup == $p->visitante->clubgroup ? $p->local->clubgroup : 'INTERSERIAL'  }}</td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="8">No se encontraron partidos con esos filtros.</td>
+                </tr>
+            @endforelse
+            </tbody>
+        </table>
+    </div>
 @endsection

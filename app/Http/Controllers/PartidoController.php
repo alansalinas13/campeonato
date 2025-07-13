@@ -15,10 +15,37 @@ class PartidoController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $partidos = Partido::with(['clubLocal', 'clubVisitante', 'clubGanador', 'campeonato'])->get();
-        return view('partidos.index', compact('partidos'));
+        /*$partidos = Partido::with(['clubLocal', 'clubVisitante', 'clubGanador', 'campeonato'])->get();
+        return view('partidos.index', compact('partidos'));*/
+        $campeonatos = Campeonato::orderBy('canpanio', 'desc')->get();
+
+        $idcampeonato = $request->input('idcampeonato');
+        $parfechas = $request->input('parfechas');
+        $grupo = $request->input('grupo');
+
+        $query = Partido::with(['local', 'visitante', 'campeonato']);
+
+        if ($idcampeonato) {
+            $query->where('idcampeonato', $idcampeonato);
+        }
+
+        if ($parfechas) {
+            $query->where('parfechas', $parfechas);
+        }
+
+        if ($grupo) {
+            $query->whereHas('local', function ($q) use ($grupo) {
+                $q->where('clubgroup', $grupo);
+            })->whereHas('visitante', function ($q) use ($grupo) {
+                $q->where('clubgroup', $grupo);
+            });
+        }
+
+        $partidos = $query->orderBy('parfechas')->get();
+
+        return view('partidos.index', compact('partidos', 'campeonatos', 'idcampeonato', 'parfechas', 'grupo'));
     }
 
     /**
@@ -31,6 +58,7 @@ class PartidoController extends Controller
             'parfec' => 'required|date',
             'pargolloc' => 'required|integer|min:0',
             'pargolvis' => 'required|integer|min:0',
+            'parfechas' => 'required|integer|min:1',
             'parpen' => 'required|boolean',
             'idcampeonato' => 'required|exists:campeonatos,idcampeonato',
             'idclub_local' => 'required|exists:clubes,idclub',
@@ -47,7 +75,7 @@ class PartidoController extends Controller
 
         $partido = Partido::create($request->only([
             'parrond', 'parfec', 'pargolloc', 'pargolvis', 'parpen',
-            'idcampeonato', 'idclub_local', 'idclub_visitante', 'idclub_ganador'
+            'idcampeonato', 'idclub_local', 'idclub_visitante', 'idclub_ganador', 'parfechas'
         ]));
         // Eliminar eventos anteriores si es edición
         if ($partido->exists) {
@@ -198,6 +226,7 @@ class PartidoController extends Controller
             'parfec' => 'required|date',
             'pargolloc' => 'required|integer|min:0',
             'pargolvis' => 'required|integer|min:0',
+            'parfechas' => 'required|integer|min:1',
             'parpen' => 'required|boolean',
             'idcampeonato' => 'required|exists:campeonatos,idcampeonato',
             'idclub_local' => 'required|exists:clubes,idclub',
@@ -214,7 +243,7 @@ class PartidoController extends Controller
         $datosOriginales = $partido->only(['parrond', 'pargolloc', 'pargolvis', 'idclub_ganador']);
         $partido->update($request->only([
             'parrond', 'parfec', 'pargolloc', 'pargolvis', 'parpen',
-            'idcampeonato', 'idclub_local', 'idclub_visitante', 'idclub_ganador'
+            'idcampeonato', 'idclub_local', 'idclub_visitante', 'idclub_ganador', 'parfechas'
         ]));
         // Eliminar eventos anteriores si es edición
         if ($partido->exists) {

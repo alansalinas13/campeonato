@@ -83,30 +83,6 @@ class JugadorController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        $jugador = Jugador::findOrFail($id);
-
-        $request->validate([
-            'jugnom' => 'required|string|max:255',
-            'jugcedula' => 'nullable|string|max:20',
-            'jugest' => 'required|integer',
-            'jugfechab' => 'nullable|date',
-            'jugtaranar' => 'required|integer',
-            'jugsusp' => 'required|boolean',
-            'jugpart_susp' => 'nullable|integer|min:0',
-            'juggoles' => 'nullable|integer|min:0',
-            'idclub' => 'nullable|exists:clubes,idclub',
-        ]);
-        $jugador->update($request->only(['jugnom', 'jugcedula', 'jugfechab', 'jugest', 'jugtaranar', 'jugsusp', 'jugpart_susp', 'juggoles', 'idclub']));
-
-        return redirect()->route('jugadores.index')->with('success', 'Jugador actualizado correctamente.');
-
-    }
-
-    /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
@@ -133,5 +109,42 @@ class JugadorController extends Controller
 
         return view('jugadores.por_club', compact('club'));
     }
+
+    public function restablecer($id)
+    {
+        $jugador = Jugador::findOrFail($id);
+        $jugador->update([
+            'jugtaranar' => 0,
+            'suspendido' => false,
+            'jugpart_susp' => 0,
+        ]);
+
+        return back()->with('success', 'Tarjetas y suspensión restablecidas.');
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        $jugador = Jugador::findOrFail($id);
+
+        $request->validate([
+            'jugnom' => 'required|string|max:255',
+            'jugcedula' => 'nullable|string|max:20',
+            'jugest' => 'required|integer',
+            'jugfechab' => 'nullable|date',
+            'jugtaranar' => 'required|integer',
+            'jugsusp' => 'required|boolean',
+            'jugpart_susp' => 'nullable|integer|min:0',
+            'juggoles' => 'nullable|integer|min:0',
+            'idclub' => 'nullable|exists:clubes,idclub',
+        ]);
+        $jugador->update($request->only(['jugnom', 'jugcedula', 'jugfechab', 'jugest', 'jugtaranar', 'jugsusp', 'jugpart_susp', 'juggoles', 'idclub']));
+
+        return redirect()->route('jugadores.index')->with('success', 'Jugador actualizado correctamente.');
+
+    }
+
 
 }

@@ -31,9 +31,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/campeonatos/{id?}/generar-cuartos', [CampeonatoController::class, 'generarCuartos'])->name('campeonatos.generarCuartos');
         Route::get('/campeonatos/{id}/generar-eliminatorias', [CampeonatoController::class, 'generarSemifinalesYFinal'])->name('campeonatos.generarEliminatorias');
         Route::get('/campeonatos/{id}/asignar-finalistas', [CampeonatoController::class, 'asignarFinalistas'])
-    ->name('campeonatos.asignarFinalistas');
-     Route::get('/jugadores', [JugadorController::class, 'index'])->name('jugadores.index');
-    Route::get('/clubes/{idclub}/jugadores', [JugadorController::class, 'porClub'])->name('jugadores.porClub');
+            ->name('campeonatos.asignarFinalistas');
+        Route::get('/jugadores', [JugadorController::class, 'index'])->name('jugadores.index');
+        Route::get('/clubes/{idclub}/jugadores', [JugadorController::class, 'porClub'])->name('jugadores.porClub');
+        Route::patch('/jugadores/{id}/restablecer', [JugadorController::class, 'restablecer'])->name('jugadores.restablecer');
     });
 
     Route::middleware('dirigente')->group(function () {
@@ -47,12 +48,10 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/posiciones/{idcampeonato?}', [PosicionController::class, 'index'])->name('posiciones.index');
 
 
-
-
 /*Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });*/
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

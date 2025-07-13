@@ -18,11 +18,13 @@ class Partido extends Model
         'idclub_local',
         'idclub_visitante',
         'idclub_ganador',
+        'parfechas',
     ];
 
     public function campeonato()
     {
-        return $this->belongsTo(Campeonato::class, 'idcampeonato');
+       // return $this->belongsTo(Campeonato::class, 'idcampeonato');
+        return $this->belongsTo(Campeonato::class, 'idcampeonato', 'idcampeonato');
     }
 
     public function clubLocal()
@@ -60,4 +62,16 @@ class Partido extends Model
     {
         return $this->hasMany(EventoPartido::class, 'idpartido');
     }
+
+    public function local()
+    {
+        return $this->belongsTo(Club::class, 'idclub_local', 'idclub');
+    }
+
+    public function visitante()
+    {
+        return $this->belongsTo(Club::class, 'idclub_visitante', 'idclub');
+    }
+
+
 }
