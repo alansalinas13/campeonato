@@ -121,7 +121,7 @@
                 <tr>
                     <td>{{ $p->parfechas }}</td>
                     <td>{{ \Carbon\Carbon::parse($p->parfec)->format('d/m/Y') }}</td>
-                    <td>{{ $p->campeonato->camyear }}</td>
+                    <td>{{ $p->campeonato->camanio }}</td>
                     <td>{{ $p->local->clubnom }}</td>
                     <td>{{ $p->pargolloc }}</td>
                     <td>{{ $p->visitante->clubnom }}</td>
