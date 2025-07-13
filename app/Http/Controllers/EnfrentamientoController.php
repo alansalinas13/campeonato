@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-Use App\Models\Partido;
-Use App\Models\Campeonato;
+use App\Models\Partido;
+use App\Models\Campeonato;
 
 class EnfrentamientoController extends Controller
 {

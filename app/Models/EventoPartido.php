@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class EventoPartido extends Model
 {
-     protected $primaryKey = 'ideventos_partido';
-     protected $table = 'eventos_partidos';
+    protected $primaryKey = 'ideventos_partido';
+    protected $table = 'eventos_partidos';
 
     protected $fillable = [
         'evendescri',

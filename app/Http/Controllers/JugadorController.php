@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Jugador;
 use App\Models\Club;
+
 class JugadorController extends Controller
 {
     /**
@@ -12,8 +13,46 @@ class JugadorController extends Controller
      */
     public function index()
     {
-        $jugadores = Jugador::with('club')->get();
-        return view('jugadores.index', compact('jugadores'));
+        $usuario = auth()->user();
+        //$jugadores = Jugador::with('club')->get();
+        //return view('jugadores.index', compact('jugadores'));
+
+        // Invitados no tienen acceso
+        if ($usuario->role === 3) {
+            abort(403, 'Acceso no autorizado.');
+        }
+
+        // Admin: ve todos los clubes
+        if ($usuario->role === 1) {
+            $clubes = Club::orderBy('clubnom')->get();
+        } else {// Dirigente: ve solo su club
+            $clubes = Club::where('idclub', $usuario->idclub)->get();
+        }
+
+        return view('jugadores.index', compact('clubes'));
+
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'jugnom' => 'required|string|max:255',
+            'jugcedula' => 'nullable|string|max:20',
+            'jugest' => 'required|integer',
+            'jugfechab' => 'nullable|date',
+            'jugtaranar' => 'required|integer',
+            'jugsusp' => 'required|boolean',
+            'jugpart_susp' => 'nullable|integer|min:0',
+            'juggoles' => 'nullable|integer|min:0',
+            'idclub' => 'nullable|exists:clubes,idclub',
+        ]);
+        Jugador::create($request->only(['jugnom', 'jugcedula', 'jugfechab', 'jugest', 'jugtaranar', 'jugsusp', 'jugpart_susp', 'juggoles', 'idclub']));
+
+        return redirect()->route('jugadores.index')->with('success', 'Jugador creado correctamente.');
+
     }
 
     /**
@@ -23,26 +62,6 @@ class JugadorController extends Controller
     {
         $clubes = Club::all();
         return view('jugadores.create', compact('clubes'));
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-        'jugnom' => 'required|string|max:255',
-        'jugest' => 'required|integer',
-        'jugtaranar' => 'required|integer',
-        'jugtarroj' => 'required|integer',
-        'jugsusp' => 'required|boolean',
-        'idclub' => 'nullable|exists:clubes,idclub',
-    ]);
-
-    Jugador::create($request->only(['jugnom', 'jugest', 'jugtaranar', 'jugtarroj', 'jugsusp', 'idclub']));
-
-    return redirect()->route('jugadores.index')->with('success', 'Jugador creado correctamente.');
-
     }
 
     /**
@@ -70,18 +89,20 @@ class JugadorController extends Controller
     {
         $jugador = Jugador::findOrFail($id);
 
-    $request->validate([
-        'jugnom' => 'required|string|max:255',
-        'jugest' => 'required|integer',
-        'jugtaranar' => 'required|integer',
-        'jugtarroj' => 'required|integer',
-        'jugsusp' => 'required|boolean',
-        'idclub' => 'nullable|exists:clubes,idclub',
-    ]);
+        $request->validate([
+            'jugnom' => 'required|string|max:255',
+            'jugcedula' => 'nullable|string|max:20',
+            'jugest' => 'required|integer',
+            'jugfechab' => 'nullable|date',
+            'jugtaranar' => 'required|integer',
+            'jugsusp' => 'required|boolean',
+            'jugpart_susp' => 'nullable|integer|min:0',
+            'juggoles' => 'nullable|integer|min:0',
+            'idclub' => 'nullable|exists:clubes,idclub',
+        ]);
+        $jugador->update($request->only(['jugnom', 'jugcedula', 'jugfechab', 'jugest', 'jugtaranar', 'jugsusp', 'jugpart_susp', 'juggoles', 'idclub']));
 
-    $jugador->update($request->only(['jugnom', 'jugest', 'jugtaranar', 'jugtarroj', 'jugsusp', 'idclub']));
-
-    return redirect()->route('jugadores.index')->with('success', 'Jugador actualizado correctamente.');
+        return redirect()->route('jugadores.index')->with('success', 'Jugador actualizado correctamente.');
 
     }
 
@@ -93,4 +114,24 @@ class JugadorController extends Controller
         Jugador::destroy($id);
         return redirect()->route('jugadores.index')->with('success', 'Jugador eliminado.');
     }
+
+    public function porClub($idclub)
+    {
+        $usuario = auth()->user();
+
+        // Invitados no pueden acceder
+        if ($usuario->role === 'invitado') {
+            abort(403, 'Acceso no autorizado.');
+        }
+
+        // Dirigente solo puede acceder a su club
+        if ($usuario->role === 'dirigente' && $usuario->idclub != $idclub) {
+            abort(403, 'No puede acceder a este club.');
+        }
+
+        $club = Club::with('jugadores')->findOrFail($idclub);
+
+        return view('jugadores.por_club', compact('club'));
+    }
+
 }

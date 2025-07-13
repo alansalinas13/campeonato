@@ -9,9 +9,10 @@ class Campeonato extends Model
 {
     protected $primaryKey = 'idcampeonato';
     protected $fillable = ['campnom', 'canpanio', 'idclub_campeon'];
-    
-    public function campeon(){
+
+    public function campeon()
+    {
         return $this->belongsTo(Club::class, 'idclub_campeon');
     }
-    
+
 }

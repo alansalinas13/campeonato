@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Partido extends Model
 {
-     protected $primaryKey = 'idpartido';
+    protected $primaryKey = 'idpartido';
 
     protected $fillable = [
         'parrond',
@@ -40,21 +40,22 @@ class Partido extends Model
         return $this->belongsTo(Club::class, 'idclub_ganador');
     }
 
-    public static function rondas()
-    {
-    return [
-        1 => 'Fase de grupos',
-        2 => 'Cuartos de final',
-        3 => 'Semifinales',
-        4 => 'Final',
-        5 => 'Partidos extras',
-    ];
-    }
-
     public function getNombreRondaAttribute()
     {
         return self::rondas()[$this->parrond] ?? 'Desconocido';
     }
+
+    public static function rondas()
+    {
+        return [
+            1 => 'Fase de grupos',
+            2 => 'Cuartos de final',
+            3 => 'Semifinales',
+            4 => 'Final',
+            5 => 'Partidos extras',
+        ];
+    }
+
     public function eventos()
     {
         return $this->hasMany(EventoPartido::class, 'idpartido');

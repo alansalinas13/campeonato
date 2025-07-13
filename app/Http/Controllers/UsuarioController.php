@@ -1,11 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Club;
 use App\Http\Controllers\ClubController;
 use Illuminate\Support\Facades\Hash;
+
 class UsuarioController extends Controller
 {
     /**
@@ -14,8 +16,8 @@ class UsuarioController extends Controller
     public function index()
     {
         $usuarios = User::with('club')->get();
-       return view('usuarios.index', compact('usuarios'));
-      
+        return view('usuarios.index', compact('usuarios'));
+
     }
 
     /**
@@ -23,10 +25,10 @@ class UsuarioController extends Controller
      */
     public function create()
     {
-     
-     $clubes = Club::all();
-     return view('usuarios.create', compact('clubes'));
-     //return view('usuarios.create');
+
+        $clubes = Club::all();
+        return view('usuarios.create', compact('clubes'));
+        //return view('usuarios.create');
     }
 
     /**
@@ -35,13 +37,13 @@ class UsuarioController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users',
-        'password' => 'required|min:6|confirmed',
-        'role' => 'required|in:1,2,3',
-        'idclub' => 'nullable|exists:clubes,idclub',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:6|confirmed',
+            'role' => 'required|in:1,2,3',
+            'idclub' => 'nullable|exists:clubes,idclub',
         ]);
-    
+
         User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -49,7 +51,7 @@ class UsuarioController extends Controller
             'role' => $request->role,
             'idclub' => $request->idclub,
         ]);
-    
+
         return redirect()->route('usuarios.index')->with('success', 'Usuario creado correctamente.');
 
     }
@@ -80,11 +82,11 @@ class UsuarioController extends Controller
     {
         $usuario = User::findOrFail($id);
         $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email,' . $usuario->id,
-        'password' => 'nullable|min:6|confirmed',
-        'role' => 'required|in:1,2,3',
-        'idclub' => 'nullable|exists:clubes,idclub',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $usuario->id,
+            'password' => 'nullable|min:6|confirmed',
+            'role' => 'required|in:1,2,3',
+            'idclub' => 'nullable|exists:clubes,idclub',
         ]);
 
         $usuario->name = $request->name;
@@ -108,7 +110,7 @@ class UsuarioController extends Controller
     public function destroy(string $id)
     {
         $usuario = User::findOrFail($id);
-         $usuario->delete();
+        $usuario->delete();
 
         return redirect()->route('usuarios.index')->with('success', 'Usuario eliminado correctamente.');
 

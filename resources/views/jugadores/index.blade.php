@@ -1,3 +1,4 @@
+{{--
 @extends('layouts.app')
 
 @section('content')
@@ -44,3 +45,22 @@
     </table>
 </div>
 @endsection
+--}}
+
+@extends('layouts.app')
+
+@section('content')
+    <a href="{{ route('jugadores.create') }}" class="btn btn-primary mb-3">Crear Jugador</a>
+    <div class="container">
+        <h2>Clubes</h2>
+        <div class="list-group">
+            @foreach($clubes as $club)
+                <a href="{{ route('jugadores.porClub', $club->idclub) }}"
+                   class="list-group-item list-group-item-action">
+                    {{ $club->clubnom }}
+                </a>
+            @endforeach
+        </div>
+    </div>
+@endsection
+

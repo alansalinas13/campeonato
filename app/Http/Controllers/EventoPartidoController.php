@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-Use App\Models\EventoPartido;
-Use App\Models\Partido;
-Use App\Models\Jugador;
+use App\Models\EventoPartido;
+use App\Models\Partido;
+use App\Models\Jugador;
 
 class EventoPartidoController extends Controller
 {
@@ -14,8 +14,8 @@ class EventoPartidoController extends Controller
      */
     public function index()
     {
-         $eventos = EventoPartido::with(['partido', 'jugador'])->get();
-    return view('eventos.index', compact('eventos'));
+        $eventos = EventoPartido::with(['partido', 'jugador'])->get();
+        return view('eventos.index', compact('eventos'));
     }
 
     /**
@@ -24,8 +24,8 @@ class EventoPartidoController extends Controller
     public function create()
     {
         $partidos = Partido::all();
-    $jugadores = Jugador::all();
-    return view('eventos.create', compact('partidos', 'jugadores'));
+        $jugadores = Jugador::all();
+        return view('eventos.create', compact('partidos', 'jugadores'));
     }
 
     /**
@@ -34,15 +34,15 @@ class EventoPartidoController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-        'evendescri' => 'required|string|max:255',
-        'evenminu' => 'required|integer|min:0',
-        'idpartido' => 'required|exists:partidos,idpartido',
-        'idjugador' => 'required|exists:jugadores,idjugador',
-    ]);
+            'evendescri' => 'required|string|max:255',
+            'evenminu' => 'required|integer|min:0',
+            'idpartido' => 'required|exists:partidos,idpartido',
+            'idjugador' => 'required|exists:jugadores,idjugador',
+        ]);
 
-    EventoPartido::create($request->only(['evendescri', 'evenminu', 'idpartido', 'idjugador']));
+        EventoPartido::create($request->only(['evendescri', 'evenminu', 'idpartido', 'idjugador']));
 
-    return redirect()->route('eventos.index')->with('success', 'Evento registrado correctamente.');
+        return redirect()->route('eventos.index')->with('success', 'Evento registrado correctamente.');
 
     }
 
@@ -59,11 +59,11 @@ class EventoPartidoController extends Controller
      */
     public function edit(string $id)
     {
-         $evento = EventoPartido::findOrFail($id);
-    $partidos = Partido::all();
-    $jugadores = Jugador::all();
+        $evento = EventoPartido::findOrFail($id);
+        $partidos = Partido::all();
+        $jugadores = Jugador::all();
 
-    return view('eventos.edit', compact('evento', 'partidos', 'jugadores'));
+        return view('eventos.edit', compact('evento', 'partidos', 'jugadores'));
     }
 
     /**
@@ -73,16 +73,16 @@ class EventoPartidoController extends Controller
     {
         $evento = EventoPartido::findOrFail($id);
 
-    $request->validate([
-        'evendescri' => 'required|string|max:255',
-        'evenminu' => 'required|integer|min:0',
-        'idpartido' => 'required|exists:partidos,idpartido',
-        'idjugador' => 'required|exists:jugadores,idjugador',
-    ]);
+        $request->validate([
+            'evendescri' => 'required|string|max:255',
+            'evenminu' => 'required|integer|min:0',
+            'idpartido' => 'required|exists:partidos,idpartido',
+            'idjugador' => 'required|exists:jugadores,idjugador',
+        ]);
 
-    $evento->update($request->only(['evendescri', 'evenminu', 'idpartido', 'idjugador']));
+        $evento->update($request->only(['evendescri', 'evenminu', 'idpartido', 'idjugador']));
 
-    return redirect()->route('eventos.index')->with('success', 'Evento actualizado.');
+        return redirect()->route('eventos.index')->with('success', 'Evento actualizado.');
     }
 
     /**
@@ -90,7 +90,7 @@ class EventoPartidoController extends Controller
      */
     public function destroy(string $id)
     {
-         EventoPartido::destroy($id);
-    return redirect()->route('eventos.index')->with('success', 'Evento eliminado.');
+        EventoPartido::destroy($id);
+        return redirect()->route('eventos.index')->with('success', 'Evento eliminado.');
     }
 }

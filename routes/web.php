@@ -32,6 +32,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/campeonatos/{id}/generar-eliminatorias', [CampeonatoController::class, 'generarSemifinalesYFinal'])->name('campeonatos.generarEliminatorias');
         Route::get('/campeonatos/{id}/asignar-finalistas', [CampeonatoController::class, 'asignarFinalistas'])
     ->name('campeonatos.asignarFinalistas');
+     Route::get('/jugadores', [JugadorController::class, 'index'])->name('jugadores.index');
+    Route::get('/clubes/{idclub}/jugadores', [JugadorController::class, 'porClub'])->name('jugadores.porClub');
     });
 
     Route::middleware('dirigente')->group(function () {

@@ -12,16 +12,8 @@ class ClubController extends Controller
      */
     public function index()
     {
-         $clubes = \App\Models\Club::all();
-    return view('clubes.index', compact('clubes'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('clubes.create');
+        $clubes = \App\Models\Club::all();
+        return view('clubes.index', compact('clubes'));
     }
 
     /**
@@ -30,15 +22,23 @@ class ClubController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-        'clubnom' => 'required|string|max:255',
-        'clubdescri' => 'nullable|string',
-        'clublogo' => 'nullable|string',
-        'clubgroup' => 'nullable|in:A,B',
-    ]);
+            'clubnom' => 'required|string|max:255',
+            'clubdescri' => 'nullable|string',
+            'clublogo' => 'nullable|string',
+            'clubgroup' => 'nullable|in:A,B',
+        ]);
 
-    \App\Models\Club::create($request->all());
+        \App\Models\Club::create($request->all());
 
-    return redirect()->route('clubes.index')->with('success', 'Club creado exitosamente.');
+        return redirect()->route('clubes.index')->with('success', 'Club creado exitosamente.');
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        return view('clubes.create');
     }
 
     /**
@@ -54,9 +54,9 @@ class ClubController extends Controller
      */
     public function edit(string $id)
     {
-         $clube = Club::findOrFail($id);
-         //dd(compact('clube'));
-         return view('clubes.edit', compact('clube'));
+        $clube = Club::findOrFail($id);
+        //dd(compact('clube'));
+        return view('clubes.edit', compact('clube'));
     }
 
     /**
@@ -65,15 +65,15 @@ class ClubController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-        'clubnom' => 'required|string|max:255',
-        'clubdescri' => 'nullable|string',
-        'clublogo' => 'nullable|string',
-        'clubgroup' => 'nullable|in:A,B',
-    ]);
-    $clubes = Club::findOrFail($id);
-    $clubes->update($request->all());
+            'clubnom' => 'required|string|max:255',
+            'clubdescri' => 'nullable|string',
+            'clublogo' => 'nullable|string',
+            'clubgroup' => 'nullable|in:A,B',
+        ]);
+        $clubes = Club::findOrFail($id);
+        $clubes->update($request->all());
 
-    return redirect()->route('clubes.index')->with('success', 'Club actualizado correctamente.');
+        return redirect()->route('clubes.index')->with('success', 'Club actualizado correctamente.');
 
     }
 
@@ -85,7 +85,7 @@ class ClubController extends Controller
         $clubes = \App\Models\Club::findOrFail($id);
         $clubes->delete();
 
-    return redirect()->route('clubes.index')->with('success', 'Club eliminado correctamente.');
+        return redirect()->route('clubes.index')->with('success', 'Club eliminado correctamente.');
 
     }
 }

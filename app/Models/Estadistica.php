@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Estadistica extends Model
 {
-     protected $primaryKey = 'idestadisticas';
+    protected $primaryKey = 'idestadisticas';
 
     protected $fillable = [
         'estgroup',
