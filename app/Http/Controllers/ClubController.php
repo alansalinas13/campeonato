@@ -12,7 +12,7 @@ class ClubController extends Controller
      */
     public function index()
     {
-        $clubes = \App\Models\Club::all();
+        $clubes = Club::all();
         return view('clubes.index', compact('clubes'));
     }
 
@@ -24,11 +24,20 @@ class ClubController extends Controller
         $request->validate([
             'clubnom' => 'required|string|max:255',
             'clubdescri' => 'nullable|string',
-            'clublogo' => 'nullable|string',
+            //'clublogo' => 'nullable|string',
+            'clublogo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'clubgroup' => 'nullable|in:A,B',
         ]);
+        $data = $request->except('clublogo');
 
-        \App\Models\Club::create($request->all());
+        if ($request->hasFile('clublogo')) {
+            $file = $request->file('clublogo');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('logos', $filename, 'public');
+            $data['clublogo'] = 'storage/' . $path;
+        }
+
+        Club::create($data);
 
         return redirect()->route('clubes.index')->with('success', 'Club creado exitosamente.');
     }
@@ -67,11 +76,20 @@ class ClubController extends Controller
         $request->validate([
             'clubnom' => 'required|string|max:255',
             'clubdescri' => 'nullable|string',
-            'clublogo' => 'nullable|string',
+            //'clublogo' => 'nullable|string',
+            'clublogo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'clubgroup' => 'nullable|in:A,B',
         ]);
+
+        $data = $request->except('clublogo');
+        if ($request->hasFile('clublogo')) {
+            $file = $request->file('clublogo');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('logos', $filename, 'public');
+            $data['clublogo'] = 'storage/' . $path;
+        }
         $clubes = Club::findOrFail($id);
-        $clubes->update($request->all());
+        $clubes->update($data);
 
         return redirect()->route('clubes.index')->with('success', 'Club actualizado correctamente.');
 
@@ -82,7 +100,7 @@ class ClubController extends Controller
      */
     public function destroy(string $id)
     {
-        $clubes = \App\Models\Club::findOrFail($id);
+        $clubes = Club::findOrFail($id);
         $clubes->delete();
 
         return redirect()->route('clubes.index')->with('success', 'Club eliminado correctamente.');
