@@ -1,3 +1,4 @@
+{{--
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
@@ -34,3 +35,72 @@
         </div>
     </body>
 </html>
+--}}
+
+    <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Campeonato</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+
+        .sidebar {
+            height: 100vh;
+            background-color: #3694dd;
+            padding-top: 1rem;
+        }
+
+        .sidebar a {
+            color: white;
+            padding: 0.75rem 1rem;
+            display: block;
+            text-decoration: none;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background-color: #2d7cc0;
+        }
+
+        .main-content {
+            margin-left: 220px;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="d-flex">
+    <!-- Sidebar -->
+    <div class="sidebar position-fixed top-0 start-0">
+        <h5 class="text-white text-center mb-4">Menú</h5>
+        <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a>
+        <a href="{{ route('usuarios.index') }}" class="{{ request()->is('usuarios*') ? 'active' : '' }}">Usuarios</a>
+        <a href="{{ route('clubes.index') }}" class="{{ request()->is('clubes*') ? 'active' : '' }}">Clubes</a>
+        <a href="{{ route('campeonatos.index') }}" class="{{ request()->is('campeonatos*') ? 'active' : '' }}">Campeonatos</a>
+        <a href="{{ route('jugadores.index') }}" class="{{ request()->is('jugadores*') ? 'active' : '' }}">Jugadores</a>
+        <a href="{{ route('partidos.index') }}" class="{{ request()->is('partidos*') ? 'active' : '' }}">Partidos</a>
+        <a href="{{ route('posiciones.index', ['idcampeonato' => now()->year]) }}"
+           class="{{ request()->is('posiciones*') ? 'active' : '' }}">Posiciones</a>
+        <a href="{{ route('logout') }}"
+           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Salir</a>
+
+        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="main-content w-100">
+        @yield('content')
+    </div>
+</div>
+
+</body>
+</html>
+
