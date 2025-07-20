@@ -23,5 +23,6 @@ class AppServiceProvider extends ServiceProvider
         Route::bind('clubes', function ($value) {
         return Club::where('idclub', $value)->firstOrFail();
         });
+        putenv('GOOGLE_APPLICATION_CREDENTIALS=' . base_path(env('GOOGLE_APPLICATION_CREDENTIALS')));
     }
 }

@@ -6,7 +6,16 @@ use Illuminate\Http\Request;
 use App\Models\Jugador;
 use App\Models\DetalleFicha;
 use Illuminate\Support\Facades\Storage;
-use phpDocumentor\Reflection\DocBlock\Description;
+
+//use Google\Cloud\Vision\V1\Client\ImageAnnotatorClient;
+use Barryvdh\DomPDF\Facade\Pdf;
+
+// si usás dompdf
+use Google\Cloud\Vision\V1\Client\ImageAnnotatorClient;
+use Google\Cloud\Vision\V1\Image;
+use Google\Cloud\Vision\V1\Feature;
+use Google\Cloud\Vision\V1\AnnotateImageRequest;
+use Google\Cloud\Vision\V1\BatchAnnotateImagesRequest;
 
 class FichaJugadorController extends Controller
 {
@@ -30,6 +39,13 @@ class FichaJugadorController extends Controller
             'tipo_habilitacion' => 'required|in:2,3',
             'imagen_ficha' => 'required|image|mimes:jpeg,png,jpg|max:20480',// 20MB
         ]);
+dd($request);
+        $errores = $this->analizarFicha($request->file('imagen_ficha')->getRealPath());
+
+        if (!empty($errores)) {
+            $pdf = Pdf::loadView('reportes.errores_ficha', ['errores' => $errores]);
+            return $pdf->download('reporte_errores_ficha.pdf');
+        }
 
         $path = $request->file('imagen_ficha')->store('fichas', 'public');
 
@@ -63,6 +79,51 @@ class FichaJugadorController extends Controller
         $jugador->save();
 
         return redirect()->route('jugadores.porClub', $jugador->idclub)->with('success', 'Jugador habilitado en ' . strtoupper($request->tipo_habilitacion));
+    }
+
+    public function analizarFicha($rutaAbsoluta)
+    {
+        $errores = [];
+        try {
+            $vision = new ImageAnnotatorClient();
+
+            $image = (new Image())->setContent(file_get_contents($rutaAbsoluta));
+            $feature = (new Feature())->setType(Feature\Type::TEXT_DETECTION);
+
+            $annotateRequest = (new AnnotateImageRequest())
+                ->setImage($image)
+                ->setFeatures([$feature]);
+
+            $batchRequest = new BatchAnnotateImagesRequest();
+            $batchRequest->setRequests([$annotateRequest]);
+
+            $response = $vision->batchAnnotateImages($batchRequest);
+
+            $responses = $response->getResponses();
+
+
+            foreach ($responses as $res) {
+                if ($res->getError()->getMessage()) {
+                    $errores[] = "Error de API: " . $res->getError()->getMessage();
+                } else {
+                    $annotations = $res->getTextAnnotations();
+                    if (count($annotations) === 0) {
+                        $errores[] = "No se detectó texto en la imagen.";
+                    } else {
+                        $contenido = strtolower($annotations[0]->getDescription());
+
+                        if (!str_contains($contenido, 'liga') && !str_contains($contenido, 'ufi')) {
+                            $errores[] = "No se encontró el texto 'Liga' ni 'UFI' en la ficha.";
+                        }
+                    }
+                }
+            }
+
+            $vision->close();
+        } catch (\Exception $e) {
+            $errores[] = "Excepción detectada al usar Google Vision API: " . $e->getMessage();
+        }
+        return $errores;
     }
 
     /**
