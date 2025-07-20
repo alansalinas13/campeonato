@@ -10,6 +10,7 @@ use App\Http\Controllers\PartidoController;
 use App\Http\Controllers\EventoPartidoController;
 use App\Http\Controllers\EnfrentamientoController;
 use App\Http\Controllers\PosicionController;
+use App\Http\Controllers\FichaJugadorController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -44,6 +45,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('invitado')->group(function () {
         Route::get('/tabla-posiciones', [/* controlador */])->name('tabla.invitado');
     });
+    Route::post('/fichas', [FichaJugadorController::class, 'store'])->name('fichas.store');
 });
 Route::get('/posiciones/{idcampeonato?}', [PosicionController::class, 'index'])->name('posiciones.index');
 
