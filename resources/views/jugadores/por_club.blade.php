@@ -128,6 +128,15 @@
                     document.getElementById('idjugador').value = button.getAttribute('data-id');
                 });
             </script>
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
         @else
             <p>No hay jugadores registrados.</p>
         @endif
