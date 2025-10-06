@@ -21,7 +21,7 @@
                 <label>Logo </label>
                 {{--<input type="text" name="clublogo" value="{{ old('clublogo', $clube->clublogo) }}" class="form-control">--}}
                 <input type="file" name="clublogo" value="{{ old('clublogo', $clube->clublogo) }}" class="form-control"
-                       accept="image/*" onchange="previewLogo(event)">
+                       accept=".jpeg,.jpg,.png,.gif" onchange="previewLogo(event)">
                 {{-- Imagen actual --}}
                 @if ($clube->clublogo)
                     <div class="mt-2">
@@ -38,7 +38,6 @@
                 <label>Nuevo logo:</label><br>
                 <img id="logo-preview" src="" alt="Vista previa del logo" style="max-width: 150px; max-height: 150px;">
             </div>
-
 
 
             <div class="mb-3">
@@ -64,13 +63,21 @@
         const container = document.getElementById('preview-container');
 
         if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                preview.src = e.target.result;
-                container.style.display = 'block';
-            };
-            reader.readAsDataURL(input.files[0]);
-        } else {
+            const exte = input.files[0].name.substr(input.files[0].name.lastIndexOf('.') + 1).toLowerCase();
+            const extensiones = ['jpeg', 'jpg', 'png', 'gif'];
+            if (!extensiones.includes(exte)) {
+                alert('Formato invalido. Debe ser jpeg, jpg, png o gif')
+            }
+            else {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    container.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        else {
             preview.src = '';
             container.style.display = 'none';
         }

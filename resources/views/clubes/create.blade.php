@@ -19,7 +19,8 @@
             <div class="mb-3">
                 <label>Logo (url o nombre de archivo)</label>
                 {{--<input type="text" name="clublogo" class="form-control">--}}
-                <input type="file" name="clublogo" class="form-control" accept="image/*" onchange="previewLogo(event)">
+                <input type="file" name="clublogo" class="form-control" accept=".jpeg,.jpg,.png,.gif"
+                       onchange="previewLogo(event)">
             </div>
 
             <div id="preview-container" class="mb-3" style="display: none;">
@@ -47,13 +48,22 @@
         const container = document.getElementById('preview-container');
 
         if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                preview.src = e.target.result;
-                container.style.display = 'block';
-            };
-            reader.readAsDataURL(input.files[0]);
-        } else {
+            const exte = input.files[0].name.substr(input.files[0].name.lastIndexOf('.') + 1).toLowerCase();
+            const extensiones  = ['jpeg','jpg','png','gif'];
+            if (!extensiones.includes(exte) ) {
+                alert('Formato invalido. Debe ser jpeg, jpg, png o gif')
+            }
+            else {
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    container.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        else {
             preview.src = '';
             container.style.display = 'none';
         }
