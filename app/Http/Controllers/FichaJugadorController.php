@@ -17,33 +17,35 @@ use Google\Cloud\Vision\V1\Feature;
 use Google\Cloud\Vision\V1\AnnotateImageRequest;
 use Google\Cloud\Vision\V1\BatchAnnotateImagesRequest;
 
-class FichaJugadorController extends Controller
-{
+class FichaJugadorController extends Controller {
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
+    public function index() {
         //
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
+    public function store(Request $request) {
+
 
         $request->validate([
-            'idjugador' => 'required|exists:jugadores,idjugador',
-            'anio' => 'required|integer|min:2000|max:' . date('Y'),
-            'tipo_habilitacion' => 'required|in:2,3',
-            'imagen_ficha' => 'required|image|mimes:jpeg,png,jpg|max:20480',// 20MB
+            'idjugador'               => 'required|exists:jugadores,idjugador',
+            'tipo_habilitacion'       => 'required|in:1,2,3',
+            'tipo_traspaso'           => 'nullable|in:1,2',
+            'imagen_ficha'            => 'required|image|mimes:jpeg,png,jpg|max:20480',// 20MB
+            'imagen_fotocopia_cedula' => 'required|image|mimes:jpeg,png,jpg|max:20480',// 20MB
+            'imagen_ficha_medica'     => 'required|image|mimes:jpeg,png,jpg|max:20480',// 20MB
+            'imagen_aut_menor'        => 'nullable|image|mimes:jpeg,png,jpg|max:20480',// 20MB
         ]);
-dd($request);
+
         $errores = $this->analizarFicha($request->file('imagen_ficha')->getRealPath());
 
         if (!empty($errores)) {
             $pdf = Pdf::loadView('reportes.errores_ficha', ['errores' => $errores]);
+
             return $pdf->download('reporte_errores_ficha.pdf');
         }
 
@@ -53,22 +55,23 @@ dd($request);
 
         // Buscar ficha existente
         $ficha = DetalleFicha::where('idjugador', $data['idjugador'])
-            ->where('anio', $data['anio'])
-            ->where('tipo_habilitacion', $data['tipo_habilitacion'])
-            ->first();
+                             ->where('anio', $data['anio'])
+                             ->where('tipo_habilitacion', $data['tipo_habilitacion'])
+                             ->first();
         if ($ficha) {
-            $data['imagen_ficha'] = 'storage/' . $path;
+            $data['imagen_ficha'] = 'storage/'.$path;
             if ($ficha && $ficha->imagen_ficha && Storage::disk('public')->exists(str_replace('storage/', '', $ficha->imagen_ficha))) {
                 Storage::disk('public')->delete(str_replace('storage/', '', $ficha->imagen_ficha));
             }
             $ficha->update($data);
-        } else {
+        }
+        else {
             // Guardar detalle de ficha
             DetalleFicha::create([
-                'idjugador' => $request->idjugador,
-                'anio' => $request->anio,
+                'idjugador'         => $request->idjugador,
+                'anio'              => $request->anio,
                 'tipo_habilitacion' => $request->tipo_habilitacion,
-                'imagen_ficha' => 'storage/' . $path,
+                'imagen_ficha'      => 'storage/'.$path,
             ]);
         }
 
@@ -78,11 +81,10 @@ dd($request);
         $jugador->jugfechab = now();
         $jugador->save();
 
-        return redirect()->route('jugadores.porClub', $jugador->idclub)->with('success', 'Jugador habilitado en ' . strtoupper($request->tipo_habilitacion));
+        return redirect()->route('jugadores.porClub', $jugador->idclub)->with('success', 'Jugador habilitado en '.strtoupper($request->tipo_habilitacion));
     }
 
-    public function analizarFicha($rutaAbsoluta)
-    {
+    public function analizarFicha($rutaAbsoluta) {
         $errores = [];
         try {
             $vision = new ImageAnnotatorClient();
@@ -101,15 +103,16 @@ dd($request);
 
             $responses = $response->getResponses();
 
-
             foreach ($responses as $res) {
                 if ($res->getError()->getMessage()) {
-                    $errores[] = "Error de API: " . $res->getError()->getMessage();
-                } else {
+                    $errores[] = "Error de API: ".$res->getError()->getMessage();
+                }
+                else {
                     $annotations = $res->getTextAnnotations();
                     if (count($annotations) === 0) {
                         $errores[] = "No se detectó texto en la imagen.";
-                    } else {
+                    }
+                    else {
                         $contenido = strtolower($annotations[0]->getDescription());
 
                         if (!str_contains($contenido, 'liga') && !str_contains($contenido, 'ufi')) {
@@ -120,49 +123,46 @@ dd($request);
             }
 
             $vision->close();
-        } catch (\Exception $e) {
-            $errores[] = "Excepción detectada al usar Google Vision API: " . $e->getMessage();
         }
+        catch (\Exception $e) {
+            $errores[] = "Excepción detectada al usar Google Vision API: ".$e->getMessage();
+        }
+
         return $errores;
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
+    public function update(Request $request, string $id) {
         //
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
+    public function create() {
         //
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
+    public function show(string $id) {
         //
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
-    {
+    public function edit(string $id) {
         //
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
+    public function destroy(string $id) {
         //
     }
 }

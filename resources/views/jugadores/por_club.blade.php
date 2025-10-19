@@ -95,12 +95,12 @@
                                 <input type="hidden" name="idjugador" id="inputJugadorId">
 
                                 <div class="mb-3">
-                                    <label for="tipo_fichaje">Tipo de fichaje</label>
-                                    <select name="tipo_fichaje" id="tipo_fichaje" class="form-control" required>
+                                    <label for="tipo_habilitacion">Tipo de fichaje</label>
+                                    <select name="tipo_habilitacion" id="tipo_habilitacion" class="form-control" required>
                                         <option value="">-- Seleccione --</option>
-                                        <option value="primer_menor">Primer fichaje (menor de edad)</option>
-                                        <option value="primer_mayor">Primer fichaje (mayor de edad)</option>
-                                        <option value="traspaso">Traspaso</option>
+                                        <option value="1">Primer fichaje (menor de edad)</option>
+                                        <option value="2">Primer fichaje (mayor de edad)</option>
+                                        <option value="3">Traspaso</option>
                                     </select>
                                 </div>
 
@@ -108,30 +108,34 @@
                                     <label for="tipo_traspaso">Liga origen</label>
                                     <select name="tipo_traspaso" id="tipo_traspaso" class="form-control" required>
                                         <option value="">-- Seleccione --</option>
-                                        <option value="liga_local">Liga Local</option>
-                                        <option value="otra_liga">Otra Liga </option>
+                                        <option value="1">Liga Local</option>
+                                        <option value="2">Otra Liga </option>
                                     </select>
                                 </div>
 
                                 <div class="mb-3">
                                     <label>Ficha verde</label>
-                                    <input type="file" name="ficha_verde" class="form-control" accept="image/*" required>
+                                    <input type="file" name="imagen_ficha" class="form-control" accept="image/*" required>
                                 </div>
 
                                 <div class="mb-3">
                                     <label>Fotocopia de cédula</label>
-                                    <input type="file" name="fotocopia_cedula" class="form-control" accept="image/*" required>
+                                    <input type="file" name="imagen_fotocopia_cedula" class="form-control" accept="image/*" required>
                                 </div>
 
                                 <div class="mb-3">
                                     <label>Ficha médica</label>
-                                    <input type="file" name="ficha_medica" class="form-control" accept="image/*" required>
+                                    <input type="file" name="imagen_ficha_medica" class="form-control" accept="image/*" required>
                                 </div>
 
                                 <!-- Campo condicional -->
                                 <div class="mb-3 d-none" id="campoAutorizacion">
                                     <label>Autorización del menor</label>
-                                    <input type="file" name="autorizacion_menor" id="autorizacion_menor" class="form-control" accept="image/*">
+                                    <input type="file" name="imagen_aut_menor" id="imagen_aut_menor" class="form-control" accept="image/*">
+                                </div>
+
+                                <div id="progresoContainer" class="progress d-none mb-3">
+                                    <div class="progress-bar" role="progressbar" style="width: 0%"></div>
                                 </div>
 
                                 <button type="submit" class="btn btn-primary">Guardar</button>
@@ -140,23 +144,25 @@
                     </div>
                 </div>
             </div>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
             <script>
                 // 🔹 Lógica para mostrar/ocultar autorización del menor
-                document.getElementById('tipo_fichaje').addEventListener('change', function() {
+                document.getElementById('tipo_habilitacion').addEventListener('change', function() {
                     const campoAutorizacion = document.getElementById('campoAutorizacion');
-                    const inputAutorizacion = document.getElementById('autorizacion_menor');
+                    const inputAutorizacion = document.getElementById('imagen_aut_menor');
                     const campoTipTraspaso = document.getElementById('campoTipTraspaso');
                     const inputTipTraspaso = document.getElementById('tipo_traspaso');
                     campoTipTraspaso.classList.add('d-none');
                     inputTipTraspaso.removeAttribute('required');
-                    if (this.value === 'primer_menor') {
+                    if (this.value === '1') {//menor
                         campoAutorizacion.classList.remove('d-none');
                         inputAutorizacion.setAttribute('required', 'required');
                     } else {
                         campoAutorizacion.classList.add('d-none');
                         inputAutorizacion.removeAttribute('required');
                         inputAutorizacion.value = ''; // limpia si estaba cargado
-                        if(this.value === 'traspaso') {
+                        if(this.value === '3') {//transpaso
                             campoTipTraspaso.classList.remove('d-none');
                             inputTipTraspaso.setAttribute('required', 'required');
                         }
@@ -215,7 +221,7 @@
                     const modal = new bootstrap.Modal(document.getElementById('modalFichaJugador'));
                     modal.show();
                     const campoAutorizacion = document.getElementById('campoAutorizacion');
-                    const inputAutorizacion = document.getElementById('autorizacion_menor');
+                    const inputAutorizacion = document.getElementById('imagen_aut_menor');
                     const campoTipTraspaso = document.getElementById('campoTipTraspaso');
                     const inputTipTraspaso = document.getElementById('tipo_traspaso');
                     campoAutorizacion.classList.add('d-none');
