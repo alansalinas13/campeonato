@@ -82,7 +82,7 @@
     <!-- Sidebar -->
     <div class="sidebar position-fixed top-0 start-0">
         <h5 class="text-white text-center mb-4">Menú</h5>
-        <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a>
+        <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">Inicio</a>
         <a href="{{ route('usuarios.index') }}" class="{{ request()->is('usuarios*') ? 'active' : '' }}">Usuarios</a>
         <a href="{{ route('clubes.index') }}" class="{{ request()->is('clubes*') ? 'active' : '' }}">Clubes</a>
         <a href="{{ route('campeonatos.index') }}" class="{{ request()->is('campeonatos*') ? 'active' : '' }}">Campeonatos</a>

@@ -87,6 +87,7 @@ class FichaJugadorController extends Controller {
     public function analizarFicha($rutaAbsoluta) {
         $errores = [];
         try {
+            //$vision = new ImageAnnotatorClient();
             $vision = new ImageAnnotatorClient();
 
             $image = (new Image())->setContent(file_get_contents($rutaAbsoluta));
