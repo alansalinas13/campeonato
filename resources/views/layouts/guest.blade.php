@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{{--<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
@@ -27,4 +27,44 @@
             </div>
         </div>
     </body>
+</html>
+--}}
+
+
+    <!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="csrf-token" content="{{ csrf_token() }}"/>
+
+    <title>{{ config('app.name', 'Campeonato') }}</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net"/>
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet"/>
+
+    <!-- Vite: app + auth styles -->
+    @vite(['resources/css/app.css', 'resources/css/auth.css', 'resources/js/app.js'])
+</head>
+<body class="auth-body">
+
+<div class="auth-container">
+    <!-- Left panel: optional branding / illustration -->
+    <div class="auth-panel">
+        <img src="{{ asset('images/logo.svg') }}" alt="{{ config('app.name') }}" style="width:140px; height:auto;">
+        <h1>{{ config('app.name', 'Campeonato') }}</h1>
+        <p>Bienvenido — accede con tu cuenta o crea una nueva.</p>
+
+        <!-- pequeña tarjeta con beneficios -->
+    </div>
+
+    <!-- Right panel: el card con el slot de Breeze -->
+    <div class="auth-card">
+
+        {{ $slot }}
+    </div>
+</div>
+
+</body>
 </html>

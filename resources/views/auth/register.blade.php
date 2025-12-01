@@ -1,3 +1,4 @@
+{{--
 <x-guest-layout>
     <form method="POST" action="{{ route('register') }}">
         @csrf
@@ -49,4 +50,59 @@
             </x-primary-button>
         </div>
     </form>
+</x-guest-layout>
+--}}
+
+
+<x-guest-layout>
+
+    <h2 class="mb-6">Crear cuenta</h2>
+
+    <form method="POST" action="{{ route('register') }}">
+        @csrf
+
+        <!-- Name -->
+        <div class="form-row">
+            <x-input-label for="name" :value="__('Nombre')" />
+            <x-text-input id="name" name="name" type="text"
+                          :value="old('name')" required autofocus autocomplete="name" />
+            <x-input-error :messages="$errors->get('name')" />
+        </div>
+
+        <!-- Email -->
+        <div class="form-row">
+            <x-input-label for="email" :value="__('Correo electrónico')" />
+            <x-text-input id="email" name="email" type="email"
+                          :value="old('email')" required autocomplete="username" />
+            <x-input-error :messages="$errors->get('email')" />
+        </div>
+
+        <!-- Password -->
+        <div class="form-row">
+            <x-input-label for="password" :value="__('Contraseña')" />
+            <x-text-input id="password" name="password" type="password"
+                          required autocomplete="new-password" />
+            <x-input-error :messages="$errors->get('password')" />
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="form-row">
+            <x-input-label for="password_confirmation" :value="__('Confirmar contraseña')" />
+            <x-text-input id="password_confirmation" name="password_confirmation"
+                          type="password" required autocomplete="new-password" />
+            <x-input-error :messages="$errors->get('password_confirmation')" />
+        </div>
+
+        <!-- Actions -->
+        <div class="form-actions">
+            <a class="btn-ghost text-sm" href="{{ route('login') }}">
+                {{ __('¿Ya tenés cuenta?') }}
+            </a>
+
+            <x-primary-button>
+                {{ __('Registrar') }}
+            </x-primary-button>
+        </div>
+    </form>
+
 </x-guest-layout>

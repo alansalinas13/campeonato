@@ -1,3 +1,4 @@
+{{--
 <x-guest-layout>
     <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
         {{ __('Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn\'t receive the email, we will gladly send you another.') }}
@@ -28,4 +29,35 @@
             </button>
         </form>
     </div>
+</x-guest-layout>
+--}}
+
+<x-guest-layout>
+
+    <h2 class="mb-4">Verificar tu correo</h2>
+
+    <p class="text-sm text-gray-600 mb-6">
+        Antes de continuar, revisá tu correo para ver el enlace de verificación.
+        Si no recibiste el mensaje, podés solicitar otro.
+    </p>
+
+    <!-- Session Status -->
+    <x-auth-session-status class="mb-4" :status="session('status')" />
+
+    <form method="POST" action="{{ route('verification.send') }}" class="space-y-4">
+        @csrf
+
+        <x-primary-button>
+            {{ __('Reenviar correo de verificación') }}
+        </x-primary-button>
+    </form>
+
+    <form method="POST" action="{{ route('logout') }}" class="mt-4">
+        @csrf
+
+        <button type="submit" class="btn-ghost">
+            {{ __('Cerrar sesión') }}
+        </button>
+    </form>
+
 </x-guest-layout>
