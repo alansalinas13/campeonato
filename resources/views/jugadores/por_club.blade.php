@@ -22,8 +22,8 @@
                     <th>Goles</th>
                     @if(Auth::user()->role === 1)
                         <th>Restablecer Amarillas y Sanciones</th>
+                        <th>Acciones</th>
                     @endif
-                    <th>Acciones</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -69,20 +69,22 @@
                                     <button type="submit" class="btn btn-sm btn-warning">🔄 Restablecer</button>
                                 </form>
                             </td>
+
+                            <td>
+                                <a href="{{ route('jugadores.edit', $jugador) }}"
+                                   class="btn btn-sm btn-warning">Editar</a>
+                                <form action="{{ route('jugadores.destroy', $jugador) }}" method="POST"
+                                      style="display:inline-block;" onsubmit="return confirm('¿Eliminar jugador?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-sm btn-danger">Eliminar</button>
+                                </form>
+                                <button class="btn btn-info btn-sm" data-bs-toggle="modal"
+                                        onclick="abrirModalFicha({{ $jugador->idjugador }})">
+                                    Agregar Ficha
+                                </button>
+                            </td>
                         @endif
-                        <td>
-                            <a href="{{ route('jugadores.edit', $jugador) }}" class="btn btn-sm btn-warning">Editar</a>
-                            <form action="{{ route('jugadores.destroy', $jugador) }}" method="POST"
-                                  style="display:inline-block;" onsubmit="return confirm('¿Eliminar jugador?')">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-sm btn-danger">Eliminar</button>
-                            </form>
-                            <button class="btn btn-info btn-sm" data-bs-toggle="modal"
-                                    onclick="abrirModalFicha({{ $jugador->idjugador }})">
-                                Agregar Ficha
-                            </button>
-                        </td>
                     </tr>
                 @endforeach
                 </tbody>
