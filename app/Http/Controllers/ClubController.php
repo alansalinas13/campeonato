@@ -12,7 +12,20 @@ class ClubController extends Controller
      */
     public function index()
     {
-        $clubes = Club::all();
+
+        $usuario = auth()->user();
+
+        // Invitados no tienen acceso
+        if ($usuario->role === 3) {
+            abort(403, 'Acceso no autorizado.');
+        }
+
+        // Admin: ve todos los clubes
+        if ($usuario->role === 1) {
+            $clubes = Club::orderBy('clubnom')->get();
+        } else {// Dirigente: ve solo su club
+            $clubes = Club::where('idclub', $usuario->idclub)->get();
+        }
         return view('clubes.index', compact('clubes'));
     }
 

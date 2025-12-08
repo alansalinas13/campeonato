@@ -50,6 +50,11 @@
         </div>
 
         <button type="submit" class="btn btn-success">Actualizar</button>
+        <a href="{{ route('usuarios.index') }}"
+           class="btn btn-secondary"
+           style="background:#6c757d; border:none;">
+            Cancelar
+        </a>
     </form>
 </div>
 @endsection

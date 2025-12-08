@@ -50,7 +50,9 @@
 @extends('layouts.app')
 
 @section('content')
-    <a href="{{ route('jugadores.create') }}" class="btn btn-primary mb-3">Crear Jugador</a>
+    @if(Auth::user()->role === 1)
+        <a href="{{ route('jugadores.create') }}" class="btn btn-primary mb-3">Crear Jugador</a>
+    @endif
     <div class="container">
         <h2>Clubes</h2>
         <div class="list-group">

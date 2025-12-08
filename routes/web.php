@@ -13,8 +13,8 @@ use App\Http\Controllers\PosicionController;
 use App\Http\Controllers\FichaJugadorController;
 
 Route::get('/', function () {
-    return view('welcome');
-});
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -26,11 +26,12 @@ Route::get('/dashboard', function () {
 Route::middleware(['auth'])->group(function () {
 
     // ADMINISTRADOR
+    Route::resource('clubes', ClubController::class);
+    Route::resource('jugadores', JugadorController::class);
     Route::middleware('admin')->group(function () {
         Route::resource('usuarios', UsuarioController::class);
-        Route::resource('clubes', ClubController::class);
+
         Route::resource('campeonatos', CampeonatoController::class);
-        Route::resource('jugadores', JugadorController::class);
         //Route::resource('partidos', PartidoController::class);
         Route::resource('eventos', EventoPartidoController::class);
 
@@ -75,8 +76,6 @@ Route::middleware(['auth'])->group(function () {
 
     // DIRIGENTE
     Route::middleware('dirigente')->group(function () {
-        Route::resource('clubes', ClubController::class);
-        Route::resource('jugadores', JugadorController::class);
         Route::get('/mis-jugadores', [/* controlador */])->name('jugadores.dirigente');
         Route::get('/tabla-posiciones', [/* controlador */])->name('tabla.dirigente');
     });
@@ -92,6 +91,7 @@ Route::middleware(['auth'])->group(function () {
     // ENFRENTAMIENTOS (todos los logueados pueden ver)
     Route::get('/enfrentamientos', [EnfrentamientoController::class, 'index'])
          ->name('enfrentamientos.index');
+    Route::get('/clubes/{idclub}/jugadores', [JugadorController::class, 'porClub'])->name('jugadores.porClub');
 });
 
 // Tabla de posiciones pública

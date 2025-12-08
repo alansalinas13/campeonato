@@ -117,6 +117,11 @@
             </div>
 
             <button type="submit" class="btn btn-success">Guardar</button>
+            <a href="{{ route('jugadores.index') }}"
+               class="btn btn-secondary"
+               style="background:#6c757d; border:none;">
+                Cancelar
+            </a>
         </form>
     </div>
 

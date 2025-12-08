@@ -145,6 +145,11 @@
 
             <input type="hidden" name="eventos_json" id="eventos_json">
             <button type="submit" class="btn btn-primary">Actualizar</button>
+            <a href="{{ route('partidos.index') }}"
+               class="btn btn-secondary"
+               style="background:#6c757d; border:none;">
+                Cancelar
+            </a>
         </form>
     </div>
 @endsection
@@ -189,7 +194,7 @@
     }
 
     // Precargar eventos (después de definir la función)
-    window.onload = function () {
+    window.onload = function() {
         @foreach($partido->eventos as $ev)
         agregarEvento({
             minuto: '{{ $ev->evenminu }}',

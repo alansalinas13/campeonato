@@ -31,6 +31,11 @@
         </div>
 
         <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        <a href="{{ route('campeonatos.index') }}"
+           class="btn btn-secondary"
+           style="background:#6c757d; border:none;">
+            Cancelar
+        </a>
     </form>
 </div>
 @endsection

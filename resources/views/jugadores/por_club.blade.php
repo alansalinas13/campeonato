@@ -4,7 +4,9 @@
 
     <div class="container">
         <h2>Jugadores de {{ $club->clubnom }}</h2>
-
+        @if(Auth::user()->role === 1)
+            <a href="{{ route('jugadores.create') }}" class="btn btn-primary mb-3">Crear Jugador</a>
+        @endif
         @if($club->jugadores->count())
             <table class="table table-bordered">
 
@@ -18,7 +20,9 @@
                     <th>Suspendido</th>
                     <th>Partidos Suspendido</th>
                     <th>Goles</th>
-                    <th>Restablecer Amarillas y Sanciones</th>
+                    @if(Auth::user()->role === 1)
+                        <th>Restablecer Amarillas y Sanciones</th>
+                    @endif
                     <th>Acciones</th>
                 </tr>
                 </thead>
@@ -56,14 +60,16 @@
                         {{--<td>{{ $jugador->club?->clubnom ?? '---' }}</td>--}}
                         <td>{{ $jugador->jugpart_susp }}</td>
                         <td>{{ $jugador->juggoles }}</td>
-                        <td>
-                            <form action="{{ route('jugadores.restablecer', $jugador->idjugador) }}" method="POST"
-                                  onsubmit="return confirm('¿Seguro que deseas restablecer tarjetas y suspensión?');">
-                                @csrf
-                                @method('PATCH')
-                                <button type="submit" class="btn btn-sm btn-warning">🔄 Restablecer</button>
-                            </form>
-                        </td>
+                        @if(Auth::user()->role === 1)
+                            <td>
+                                <form action="{{ route('jugadores.restablecer', $jugador->idjugador) }}" method="POST"
+                                      onsubmit="return confirm('¿Seguro que deseas restablecer tarjetas y suspensión?');">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="btn btn-sm btn-warning">🔄 Restablecer</button>
+                                </form>
+                            </td>
+                        @endif
                         <td>
                             <a href="{{ route('jugadores.edit', $jugador) }}" class="btn btn-sm btn-warning">Editar</a>
                             <form action="{{ route('jugadores.destroy', $jugador) }}" method="POST"
@@ -72,7 +78,8 @@
                                 @method('DELETE')
                                 <button class="btn btn-sm btn-danger">Eliminar</button>
                             </form>
-                            <button class="btn btn-info btn-sm" data-bs-toggle="modal" onclick="abrirModalFicha({{ $jugador->idjugador }})" >
+                            <button class="btn btn-info btn-sm" data-bs-toggle="modal"
+                                    onclick="abrirModalFicha({{ $jugador->idjugador }})">
                                 Agregar Ficha
                             </button>
                         </td>
@@ -82,7 +89,8 @@
             </table>
             <!-- Modal -->
             <!-- resources/views/jugadores/modal_ficha.blade.php -->
-            <div class="modal fade" id="modalFichaJugador" tabindex="-1" role="dialog" aria-labelledby="modalFichaJugadorLabel" aria-hidden="true">
+            <div class="modal fade" id="modalFichaJugador" tabindex="-1" role="dialog"
+                 aria-labelledby="modalFichaJugadorLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -96,7 +104,8 @@
 
                                 <div class="mb-3">
                                     <label for="tipo_habilitacion">Tipo de fichaje</label>
-                                    <select name="tipo_habilitacion" id="tipo_habilitacion" class="form-control" required>
+                                    <select name="tipo_habilitacion" id="tipo_habilitacion" class="form-control"
+                                            required>
                                         <option value="">-- Seleccione --</option>
                                         <option value="1">Primer fichaje (menor de edad)</option>
                                         <option value="2">Primer fichaje (mayor de edad)</option>
@@ -109,29 +118,33 @@
                                     <select name="tipo_traspaso" id="tipo_traspaso" class="form-control" required>
                                         <option value="">-- Seleccione --</option>
                                         <option value="1">Liga Local</option>
-                                        <option value="2">Otra Liga </option>
+                                        <option value="2">Otra Liga</option>
                                     </select>
                                 </div>
 
                                 <div class="mb-3">
                                     <label>Ficha verde</label>
-                                    <input type="file" name="imagen_ficha" class="form-control" accept="image/*" required>
+                                    <input type="file" name="imagen_ficha" class="form-control" accept="image/*"
+                                           required>
                                 </div>
 
                                 <div class="mb-3">
                                     <label>Fotocopia de cédula</label>
-                                    <input type="file" name="imagen_fotocopia_cedula" class="form-control" accept="image/*" required>
+                                    <input type="file" name="imagen_fotocopia_cedula" class="form-control"
+                                           accept="image/*" required>
                                 </div>
 
                                 <div class="mb-3">
                                     <label>Ficha médica</label>
-                                    <input type="file" name="imagen_ficha_medica" class="form-control" accept="image/*" required>
+                                    <input type="file" name="imagen_ficha_medica" class="form-control" accept="image/*"
+                                           required>
                                 </div>
 
                                 <!-- Campo condicional -->
                                 <div class="mb-3 d-none" id="campoAutorizacion">
                                     <label>Autorización del menor</label>
-                                    <input type="file" name="imagen_aut_menor" id="imagen_aut_menor" class="form-control" accept="image/*">
+                                    <input type="file" name="imagen_aut_menor" id="imagen_aut_menor"
+                                           class="form-control" accept="image/*">
                                 </div>
 
                                 <div id="progresoContainer" class="progress d-none mb-3">
@@ -158,11 +171,12 @@
                     if (this.value === '1') {//menor
                         campoAutorizacion.classList.remove('d-none');
                         inputAutorizacion.setAttribute('required', 'required');
-                    } else {
+                    }
+                    else {
                         campoAutorizacion.classList.add('d-none');
                         inputAutorizacion.removeAttribute('required');
                         inputAutorizacion.value = ''; // limpia si estaba cargado
-                        if(this.value === '3') {//transpaso
+                        if (this.value === '3') {//transpaso
                             campoTipTraspaso.classList.remove('d-none');
                             inputTipTraspaso.setAttribute('required', 'required');
                         }
@@ -170,7 +184,7 @@
                 });
 
                 // 🔹  lógica de envío con progreso y pdf
-                document.getElementById('fichaForm').addEventListener('submit', async function (e) {
+                document.getElementById('fichaForm').addEventListener('submit', async function(e) {
                     e.preventDefault();
                     const form = e.target;
                     const formData = new FormData(form);
@@ -183,7 +197,7 @@
                     try {
                         const response = await axios.post("{{ route('fichas.store') }}", formData, {
                             headers: {'Content-Type': 'multipart/form-data'},
-                            onUploadProgress: function (progressEvent) {
+                            onUploadProgress: function(progressEvent) {
                                 let percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
                                 progressBar.style.width = percent + '%';
                             },
@@ -200,7 +214,8 @@
                             a.click();
                             window.URL.revokeObjectURL(url);
                             Swal.fire('Error', 'La ficha tiene errores. Se descargó el informe.', 'error');
-                        } else {
+                        }
+                        else {
                             Swal.fire('Listo', 'Jugador habilitado correctamente.', 'success');
                         }
 
@@ -209,7 +224,8 @@
                         form.reset();
                         progressBar.style.width = '0%';
                         progressContainer.classList.add('d-none');
-                    } catch (error) {
+                    }
+                    catch (error) {
                         console.error(error);
                         Swal.fire('Error', 'Ocurrió un error al procesar la ficha.', 'error');
                         progressContainer.classList.add('d-none');
