@@ -37,6 +37,9 @@
 </html>
 --}}
 
+@php
+    $role = auth()->user()->role;
+@endphp
     <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -82,17 +85,28 @@
     <!-- Sidebar -->
     <div class="sidebar position-fixed top-0 start-0">
         <h5 class="text-white text-center mb-4">Menú</h5>
-        <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">Inicio</a>
-        <a href="{{ route('usuarios.index') }}" class="{{ request()->is('usuarios*') ? 'active' : '' }}">Usuarios</a>
-        <a href="{{ route('clubes.index') }}" class="{{ request()->is('clubes*') ? 'active' : '' }}">Clubes</a>
-        <a href="{{ route('campeonatos.index') }}" class="{{ request()->is('campeonatos*') ? 'active' : '' }}">Campeonatos</a>
-        <a href="{{ route('jugadores.index') }}" class="{{ request()->is('jugadores*') ? 'active' : '' }}">Jugadores</a>
+        <a href="{{ route('dashboard') }}"
+           class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">Inicio</a>
+
+        @if ($role == 1)  {{-- solo puede ver los que tengan perfil de administrador aca --}}
+            <a href="{{ route('usuarios.index') }}"
+               class="{{ request()->is('usuarios*') ? 'active' : '' }}">Usuarios</a>
+            <a href="{{ route('campeonatos.index') }}" class="{{ request()->is('campeonatos*') ? 'active' : '' }}">Campeonatos</a>
+        @endif
+
         <a href="{{ route('partidos.index') }}" class="{{ request()->is('partidos*') ? 'active' : '' }}">Partidos</a>
         <a href="{{ route('posiciones.index', ['idcampeonato' => now()->year]) }}"
            class="{{ request()->is('posiciones*') ? 'active' : '' }}">Posiciones</a>
+
+
+        @if (in_array($role, [1, 2]))  {{-- lo pueden ver los dirigentes y los administradores  --}}
+            <a href="{{ route('clubes.index') }}" class="{{ request()->is('clubes*') ? 'active' : '' }}">Clubes</a>
+            <a href="{{ route('jugadores.index') }}"
+               class="{{ request()->is('jugadores*') ? 'active' : '' }}">Jugadores</a>
+        @endif
+
         <a href="{{ route('logout') }}"
            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Salir</a>
-
         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
     </div>
 
