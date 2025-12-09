@@ -110,13 +110,12 @@
                     <a href="{{ route('eventos.index') }}">Eventos Partidos</a>
                     <a href="{{ route('enfrentamientos.index') }}">Enfrentamientos</a>
                     <a href="{{ route('posiciones.index') }}">Tabla de posiciones</a>
-                    
                 @endif
-                
+
                 @if(Auth::user()->role === 2)
                     <a href="{{ route('jugadores.dirigente') }}">Mis Jugadores</a>
                 @endif
-                
+
                 @if(Auth::user()->role === 3)
                     <a href="{{ route('tabla.invitado') }}">Tabla de posiciones</a>
                 @endif

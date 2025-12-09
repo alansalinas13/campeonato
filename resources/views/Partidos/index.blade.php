@@ -114,6 +114,7 @@
                 <th>Visitante</th>
                 <th>Goles Vis</th>
                 <th>Grupo</th>
+                <th>Acciones</th>
             </tr>
             </thead>
             <tbody>
@@ -127,6 +128,9 @@
                     <td>{{ $p->visitante->clubnom }}</td>
                     <td>{{ $p->pargolvis }}</td>
                     <td>{{ $p->local->clubgroup == $p->visitante->clubgroup ? $p->local->clubgroup : 'INTERSERIAL'  }}</td>
+                    <td>
+                        <a href="{{ route('partidos.edit', $p) }}" class="btn btn-sm btn-warning">Cargar Eventos</a>
+                    </td>
                 </tr>
             @empty
                 <tr>

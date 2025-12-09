@@ -88,10 +88,13 @@
         <a href="{{ route('dashboard') }}"
            class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">Inicio</a>
 
-        @if ($role == 1)  {{-- solo puede ver los que tengan perfil de administrador aca --}}
+        @if ($role == 1)
+            {{-- solo puede ver los que tengan perfil de administrador aca --}}
             <a href="{{ route('usuarios.index') }}"
                class="{{ request()->is('usuarios*') ? 'active' : '' }}">Usuarios</a>
             <a href="{{ route('campeonatos.index') }}" class="{{ request()->is('campeonatos*') ? 'active' : '' }}">Campeonatos</a>
+            <a href="{{ route('eventos.index') }}">Eventos Partidos</a>
+            <a href="{{ route('enfrentamientos.index') }}">Enfrentamientos</a>
         @endif
 
         <a href="{{ route('partidos.index') }}" class="{{ request()->is('partidos*') ? 'active' : '' }}">Partidos</a>
@@ -99,7 +102,8 @@
            class="{{ request()->is('posiciones*') ? 'active' : '' }}">Posiciones</a>
 
 
-        @if (in_array($role, [1, 2]))  {{-- lo pueden ver los dirigentes y los administradores  --}}
+        @if (in_array($role, [1, 2]))
+            {{-- lo pueden ver los dirigentes y los administradores  --}}
             <a href="{{ route('clubes.index') }}" class="{{ request()->is('clubes*') ? 'active' : '' }}">Clubes</a>
             <a href="{{ route('jugadores.index') }}"
                class="{{ request()->is('jugadores*') ? 'active' : '' }}">Jugadores</a>

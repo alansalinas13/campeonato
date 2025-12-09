@@ -52,8 +52,8 @@
 <div class="auth-container">
     <!-- Left panel: optional branding / illustration -->
     <div class="auth-panel">
-        <img src="{{ asset('images/logo.svg') }}" alt="{{ config('app.name') }}" style="width:140px; height:auto;">
-        <h1>{{ config('app.name', 'Campeonato') }}</h1>
+        <img src="{{ asset('image/prueba.png') }}" alt="{{ config('app.name') }}" style="width:140px; height:auto;">
+        <h1>Gestión de Campeonato</h1>
         <p>Bienvenido — accede con tu cuenta o crea una nueva.</p>
 
         <!-- pequeña tarjeta con beneficios -->
