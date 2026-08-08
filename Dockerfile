@@ -6,7 +6,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
-COPY ../../../../Downloads .
+COPY . .
 RUN npm run build
 
 
@@ -23,7 +23,7 @@ RUN composer install \
     --optimize-autoloader \
     --no-scripts
 
-COPY ../../../../Downloads .
+COPY . .
 
 RUN composer dump-autoload --optimize --no-dev
 
