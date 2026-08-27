@@ -45,7 +45,7 @@ class PartidoController extends Controller
 
         $partidos = $query->orderBy('parfechas')->get();
 
-        return view('partidos.index', compact('partidos', 'campeonatos', 'idcampeonato', 'parfechas', 'grupo'));
+        return view('Partidos.index', compact('partidos', 'campeonatos', 'idcampeonato', 'parfechas', 'grupo'));
     }
 
     /**
@@ -102,7 +102,7 @@ class PartidoController extends Controller
             ]);
         }
 
-        return redirect()->route('partidos.index')->with('success', 'Partido creado correctamente.');
+        return redirect()->route('Partidos.index')->with('success', 'Partido creado correctamente.');
     }
 
     /**
@@ -113,7 +113,7 @@ class PartidoController extends Controller
         $clubes = Club::all();
         $campeonatos = Campeonato::all();
         $jugadores = Jugador::all();
-        return view('partidos.create', compact('clubes', 'campeonatos', 'jugadores'));
+        return view('Partidos.create', compact('clubes', 'campeonatos', 'jugadores'));
     }
 
     private function actualizarEstadisticasPartido(Partido $partido, $original)
@@ -211,7 +211,7 @@ class PartidoController extends Controller
         //$local = Estadistica::where('idcampeonato', $partido->idcampeonato)
         // ->where('idclub', $partido->idclub_local)->first();
 //dd($partido);
-        return view('partidos.edit', compact('partido', 'clubes', 'campeonatos', 'jugadores'));
+        return view('Partidos.edit', compact('partido', 'clubes', 'campeonatos', 'jugadores'));
     }
 
     /**
@@ -287,7 +287,7 @@ class PartidoController extends Controller
             $this->actualizarEstadisticasPartido($partido, $datosOriginales);
         }
 
-        return redirect()->route('partidos.index')->with('success', 'Partido actualizado correctamente.');
+        return redirect()->route('Partidos.index')->with('success', 'Partido actualizado correctamente.');
     }
 
     /**
@@ -296,7 +296,7 @@ class PartidoController extends Controller
     public function destroy(string $id)
     {
         Partido::destroy($id);
-        return redirect()->route('partidos.index')->with('success', 'Partido eliminado.');
+        return redirect()->route('Partidos.index')->with('success', 'Partido eliminado.');
     }
 
 
